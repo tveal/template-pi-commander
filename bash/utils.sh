@@ -20,3 +20,9 @@ function runMain() {
   main "$@"
   echo "$(date '+%Y-%m-%d %T') [COMPLETE] $action {$component}"
 }
+
+function notInstalled() {
+  local status="$(dpkg-query -W -f='${db:Status-Status}' $1 2> /dev/null)"
+  echo "running notInstalled on $1; status: $status"
+  test -z "$status" || test "$status" != "installed"
+}
