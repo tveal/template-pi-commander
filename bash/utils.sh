@@ -26,3 +26,7 @@ function notInstalled() {
   echo "running notInstalled on $1; status: $status"
   test -z "$status" || test "$status" != "installed"
 }
+
+function isRaspberryPi() {
+  test "$(hostname)" = "raspberrypi"
+}
