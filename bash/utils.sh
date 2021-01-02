@@ -30,3 +30,12 @@ function notInstalled() {
 function isRaspberryPi() {
   test "$(hostname)" = "raspberrypi"
 }
+
+function loadNvmIfInstalled() {
+  set +e
+  export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+  set -e
+}
+# Make nvm accessible to scripts, if installed
+loadNvmIfInstalled
