@@ -39,3 +39,15 @@ function loadNvmIfInstalled() {
 }
 # Make nvm accessible to scripts, if installed
 loadNvmIfInstalled
+
+# IMPORTANT: THIS_DIR is relative to the script that sources this file.
+#  Only works in files one-level deeper than this utils.sh file
+PREV_COMMIT_FILE="$THIS_DIR/../git/prevCommit"
+LAST_COMMIT_FILE="$THIS_DIR/../git/lastCommit"
+function hasGitChanges() {
+  if [[ -f "$PREV_COMMIT_FILE" && -f "$LAST_COMMIT_FILE" ]]; then
+    test "$(cat $PREV_COMMIT_FILE)" != "$(cat $LAST_COMMIT_FILE)"
+  else
+    test ! -f "$PREV_COMMIT_FILE"
+  fi
+}
