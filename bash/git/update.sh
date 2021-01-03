@@ -3,6 +3,7 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $THIS_DIR/../utils.sh
 
 function main() {
+  local trunk="main"
   setAliases
 
   test -f "$LAST_COMMIT_FILE" && cp "$LAST_COMMIT_FILE" "$PREV_COMMIT_FILE"
@@ -13,6 +14,8 @@ function main() {
   set -e
 
   echo "$(cd $THIS_DIR/../../ && git log --format="%H" -n 1)" > "$LAST_COMMIT_FILE"
+
+  cleanGitIfChanged
 }
 
 function setAliases() {
@@ -31,9 +34,7 @@ function setAliases() {
 }
 
 function pullLatestIfClean() {
-  local trunk="main"
   local cwd="$(pwd)"
-
   cd "$THIS_DIR/../../"
 
   local activeBranch="$(git rev-parse --abbrev-ref HEAD)"
@@ -47,6 +48,21 @@ function pullLatestIfClean() {
   else
     echo "WARN git diff not clean; skipping pull"
     git status --porcelain
+  fi
+
+  cd "$cwd"
+}
+
+function cleanGitIfChanged() {
+  local cwd="$(pwd)"
+  cd "$THIS_DIR/../../"
+
+  local activeBranch="$(git rev-parse --abbrev-ref HEAD)"
+  local gitDiff="$(git status --porcelain)"
+
+  if [ -z "$gitDiff" ] && [ "$activeBranch" == "$trunk" ] && hasGitChanges; then
+    echo "Cleaning git workspace because changes after pull (git clean -fd)"
+    git clean -fd
   fi
 
   cd "$cwd"
